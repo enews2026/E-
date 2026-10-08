@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>117級第一大期｜新聞工作細則搜尋</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --text: #20242a;
+    --muted: #737a84;
+    --line: #e3e6ea;
+    --accent: #147a78;
+    --accent-light: #e8f5f4;
+    --mark: #fff0a8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    line-height: 1.75;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(246,247,249,.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    padding: 24px 20px 18px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 {
+    margin: 0 0 4px;
+    font-size: clamp(22px, 4vw, 30px);
+    letter-spacing: .02em;
+  }
+  .subtitle { color: var(--muted); font-size: 14px; }
+  .search-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  #search {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #cfd4da;
+    border-radius: 12px;
+    background: white;
+    padding: 13px 16px;
+    font-size: 16px;
+    outline: none;
+    transition: .2s;
+  }
+  #search:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(20,122,120,.12);
+  }
+  button {
+    border: 0;
+    border-radius: 12px;
+    padding: 0 17px;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  button:hover { filter: brightness(.95); }
+  .status {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  main { padding: 28px 20px 60px; }
+  .section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    margin: 0 0 18px;
+    overflow: hidden;
+  }
+  .section-title {
+    margin: 0;
+    padding: 16px 20px;
+    background: #fafbfc;
+    border-bottom: 1px solid var(--line);
+    font-size: 20px;
+  }
+  .section-title mark { background: var(--mark); border-radius: 3px; }
+  .content { padding: 16px 20px 20px; }
+  .item {
+    padding: 8px 0;
+  }
+  .item + .item { border-top: 1px dashed #e8eaed; }
+  .subhead {
+    font-weight: 700;
+    margin: 14px 0 5px;
+    font-size: 16px;
+  }
+  .line {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .link {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .link:hover { text-decoration: underline; }
+  mark {
+    background: var(--mark);
+    color: inherit;
+    padding: 0 .08em;
+    border-radius: 2px;
+  }
+  .empty {
+    text-align: center;
+    padding: 70px 20px;
+    color: var(--muted);
+  }
+  .tip {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #8a9098;
+  }
+  @media (max-width: 600px) {
+    header { padding: 18px 14px 14px; }
+    main { padding: 18px 14px 40px; }
+    .search-row { gap: 7px; }
+    button { padding: 0 13px; }
+    .content, .section-title { padding-left: 15px; padding-right: 15px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>117級第一大期｜新聞工作細則</h1>
+    <div class="subtitle">2026／117級第一大期修訂版</div>
+    <div class="search-row">
+      <input id="search" type="search" placeholder="搜尋關鍵字，例如：影片封面、15字、受訪者、JPEG、AI…" autocomplete="off">
+      <button id="clear" type="button">清除</button>
+    </div>
+    <div class="status">
+      <span id="count">載入中…</span>
+      <span>支援即時搜尋＋關鍵字標示</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="results"></div>
+</main>
+
+<script>
+const RAW = "**117級第一大期新聞工作細則**\n2026\\. 117級第一大期修訂\n可點左邊的大綱找尋\n\n# 一、新聞類型 \n\n1. 影音新聞：片長 1:30\\~3:00、影片截圖、影片封面、30秒精華\n2. 影音專題：片長 3:01\\~10:00、影片截圖、影片封面、30秒精華\n3. 文字新聞：800\\~不設上限、圖片至少3張（至少１張為記者拍攝／製圖）\n4. 文字專題：字數1,500\\~不設上限、圖片至少3張（至少１張為記者拍攝／製圖）\n5. 即時新聞：建議500字內、圖片盡量有\n\n註1：影音新聞、專題音量盡量控制在-8\\~-14db，且峰值不要超過-8\n&#x9;\t註2：圖片檔名統一格式：slug_數字（依順序編號），尺寸統一16:9\n註3：檔名底線_都用半形\n\n# 二、範例\n\n[線索範例](https://drive.google.com/drive/folders/1qR9QRxQnWKuTESbeIKP8pNYlYnS8w4HN?usp=drive_link) [一二稿範例](https://drive.google.com/drive/folders/1F8mEanEYgP4OUap2HVY_f-HQVEiaaa1c?usp=drive_link)\n\n# 三、線索\n\n1. 採主要求修改的地方，記者若有疑慮，可經由採主向總編反映（適用線索跟所有新聞）\n2. 使用Google文件繳交，開啟連結共用設定**「知道連結者皆可編輯」**，並將姓名、標題、共用連結貼上雲端新聞線索上傳區，試算表狀態欄選擇線索一稿。\n3. 採主下完註解後把試算表狀態改為採主一稿，記者修改後改為線索二稿，以此類推。\n4. 若不用再修改，請採主把狀態改為採主完稿。\n5. **記者修改完後不要按註解已解決，請在下面回覆已修改並主動告知採主。**\n6. 請務必將線索放在正確的分線頁面！！！\n7. 檔名：第666小期XX影音_SLUG_信蓁憶蕎（不用加數字）\n\n# 四、上稿流程\n\n## 影音一稿\n\n1. 檔名：第437小期政社影音_XXXX（slug）\\_信蓁憶蕎_1\n2. 採主對文字或影片的修改意見都在Google文件上面下註解，檔名最後加上(採主修)\n\n## 影音二稿\n\n1. 採主審查階段（完稿時間請參照排程）\n   - 檔名：**記者修改(採主修)稿後上傳新的二稿影片，記得將檔名數字改成2**，如第XXX小期政社影音_XXXX（slug）\\_OOOO_2\n   - 二稿還需要修改的話，記者需刪除（採主修），並將數字改成3，以利採主辨識，後續以此類推。\n   - 採主確認沒問題後，在檔名後面加上(採主完稿)，並在試算表狀態欄打上**O。**\n   - 記者修改完後不要按註解已解決，請在下面回覆已修改並**主動**告知採主。\n   - 記者採主可以建立Line群組或自尋任何聯絡方式，修改後主動聯絡採主已修改。\n\n2) 總編審查階段（完稿時間請參照排程）\n   - 總編審查階段同上，需要修改就(總編修)，沒問題就(因為總編完稿)打上**O。**\n   - 記者修改後不要按註解已解決，請在下面回覆已修改並主動告知總編，刪掉(總編修)且數字+1\n3) 老師審查階段（完稿時間請參照排程）\n   - 同上\n   - 老師審完沒問題就打上**O**\n4) 以上檔名規則同時適用於 FTP 與 Google 文件\n5) 完稿後請勿立刻刪除google文件檔，至少再留一週！\n\n# 五、上FTP\n\n## 影音新聞\n\n1. 請上傳正確版本（期數&第幾版）\n2. 檔名同一二稿命名方式\n3. 若為專題，則將檔名中的「影音」改為「專題」\n4. 30秒精華、影片截圖皆須在新聞二稿同步完成（截圖、封面同一張）\n\n## 30秒精華\n\n1. 檔名：第437小期政社影音_xxxx（slug）\\_信蓁憶蕎(30秒)，30秒的()是半形\n2. 影音新聞以及影音專題皆須上傳恰好30秒無聲空景至FTP，務必要是新聞裡面出現過的畫面，供節目部錄影使用\n3. 不得有Bar、訪問畫面或記者Stand\n\n## 圖片\n\n1. 影音新聞（含專題）\n   - 檔名：第437小期政社影音_xxxx（slug）\\_信蓁憶蕎_影片截圖\n   - 影片截圖一張，圖片不得有Bar\n\n2) 文字新聞（含專題）\n   - slug_數字（依照新聞上面放的順序）\n   - 尺寸為16:9（像素可能會有1\\~2的誤差，不扣分，修改即可）\n   - 畫質1080P以上\n   - 圖片至少3張，且至少一張是記者自己拍攝或製圖\n3) 即時新聞：若有圖片則須附上\n4) 圖片檔案需使用JPEG，不得使用PNG\n\n## 影片封面（YouTube用）\n\n1. 檔名：第437小期政社影音_xxxx（slug）\\_OOOO\\_**影片封面**\n2. 影片截圖配上美編出的公版標準字，由美編製作\n3. 總編審查\n4. 圖片檔案需使用**JPEG**，不得使用PNG\n\n# 六、線索內容規範\n\n## 線索格式\n\n1. 主題：不得為**五年內**做過的，除非主題有重大進展或改變（請務必搜尋E報 \n\n         網站），超過五年者，必須做出差異。\n\n- [中正E報](https://enews.ccu.edu.tw/)\n- [中正E報舊站](https://medium.com/enewsccu)\n\n2. 重點：簡短說明報導的核心概念、為何做、能有什麼貢獻\n3. 內容面向：闡述整篇新聞架構，先寫該段內容之面向，再寫大致架構及欲訪\n\n         問問題，有重大缺漏情節者會被扣分！\n\n4. 受訪者\n   - 不限制受訪者人數，但受訪者必須為事件相關人物，如未訪到關鍵受訪者，會依新聞內容評量標準扣分，受訪者人數以**至少兩位**為原則，如有特殊狀況請主動和採主溝通。\n   - 需有受訪者資訊及聯絡方式，可先預訪（確認受訪者／受訪主題願意接受採訪）\n   - **請務必標明約訪狀態（待／已預訪、待／已約訪、已訪），若需提早進行採訪，線索務必先提交採主審核，如果未審先訪，之後有問題不能以此作為理由！！！**\n5. 活動新聞：不要只報導活動，請記者透過活動帶出延伸議題或相關內容。\n6. 資料來源：網址、貼文圖片、列證明（不能寫自己喔），若為影片或\n\n         podcast，記者需提供內容大綱概要。\n\n7. 新聞六何檢視：根據5W1H原則填寫，方便採主審查，也釐清新聞缺乏哪些\n\n         部分其他。\n\n1. 線索小標以四個字為原則，非強制規定，可依新聞內容增減，採主會審查合\n\n         理性。\n\n2. 線索檔名後面不加數字！\n3. 記者修改完成請主動告知採主。\n\n# 七、影音新聞內容規範\n\n## 影音新聞格式＆規範\n\n1. 拍攝、匯入、剪輯、輸出、上傳，統一採用16:9，30P ，畫質1080P(不要用4K)。\n2. 新聞長度\n   - 影音新聞完稿不含安全畫面需超過一分半；含安全畫面不得超過三分鐘，即影音新聞包含 5 秒安全畫面，需介於1:35\\~3:00。\n   - 專題新聞完稿不含安全畫面須超過三分鐘；含安全畫面不得超過十分鐘，即專題新聞包含 5 秒安全畫面，需介於 3:05\\~10:00。\n   - 片長請寫：X分XX秒， 如1分45秒、2分08秒。\n3. 安全畫面\n   - 記者OS開始前須預留2秒有聲空景作為安全畫面。\n   - 記者資訊結束後則須至少預留3秒（不需要3秒整），最後記者資訊含Bar一起留，畫面不要換cut。\n4. 標題\n   - 使用粗體。\n   - 影音新聞⼤標小標皆需在15字以內，包括標點符號、英文字⺟、阿拉伯數字及全形空格（兩個英文字母或一個阿拉伯數字＝一個字）。\n   - 文字新聞⼤標小標皆需在20字以內，包括標點符號、英文字⺟、阿拉伯數字及全形空格（兩個英文字母或一個阿拉伯數字＝一個字）。\n   - 小標僅能使用全形空格代替逗號、頓號其他標點符號。\n   - **大標小標不得使用逗號、頓號、句號。**\n   - 大標能使用之標點符號包涵「：」、「？」\n   - 新聞大標不得與段落小標相同。\n\n5) 記者資訊\n   - 片尾的記者資訊為【記者　XXX　XXX　縣市地區報導】，皆全形空格。\n   - 記者OS說法為「中正E報　XXX　XXX　縣市地區報導」。\n   - 只有單一縣市地名，則需標出縣或市；若為準確地點則不用加上縣或市，如：\n\n【記者　XXX　XXX　嘉義民雄報導】\n【記者　XXX　XXX　嘉義市報導】\n【記者　XXX　XXX　中正大學報導】\n\n- 若橫跨兩個縣市，則可標出兩個縣市名稱，如：\n\n【記者　XXX　XXX　嘉義雲林報導】\n\n- 報導若涉及多人多地，則可標為「綜合報導」即可，不需標出縣市名稱，如：【記者 XXX XXX 綜合報導】\n- 若記者不只兩位，或為議題敏感，可不標出記者姓名，如： \n\n【中正E報 綜合報導】\n\n- 專題不念記者資訊，要標工作分配，如採訪撰稿　XXX／攝影剪輯　XXX。\n\n6. 地名標\n   - 地名標的標示以事件發生地或講述內容為主。\n   - 若無特定地點（如cg畫面）則可不用標出地名標。\n7. 稿頭\n   - 含標點符號請控制在 100\\~120 字內。\n   - 新聞⼤致重點描述（稿頭為ETV主播使用口白、重點新聞使用）。\n8. 電訪\n   - 盡量不電訪，不得已需電訪時，請盡量不用電訪畫面，用其他畫面取代。\n   - 電訪畫面Bar不上受訪者名稱與頭銜，用電訪受訪者標，但若切到空景且電訪繼續，則使用Bar的受訪者資訊。\n9. OS\n   - OS裡的字如果有被採主修改，請重新錄製。\n   - OS若為母語過音（閩南語、客語、原住民語）須上影音字幕，小標上在人名頭銜那邊。\n\nimage\n\n10. 翻攝自／資料來源的用法\n    - 翻攝自為記者自己翻拍或錄製。\n    - 資料來源為數據來源或他人提供影片，無版權畫面仍需標上來源。\n    - 資料來源同樣不可出現店家資訊。\n11. Stand\n    - 服裝需注意\n    - Mic的位置可能會被Bar擋住，要提高\n    - 上人名標【中正E報記者　XXX】\n    - 所有聲音結束後才能上【中正E報　XXX　XXX　縣市地區報導】\n    - OS 的長度盡量不要超過 15 秒\n    - OS 和 Stand 都要寫進逐字稿內\n    - Stand在逐字稿中的寫法為Stand：......\n    - OS、電訪記者及 Stand 需為同一⼈\n    - 若同時出現Stand與母語過音，上記者人名標即可（小標不用上） \n    - 站Stand時建議要帶記者證，並注意要翻正面\n    - Stand不須為一鏡到底\n    - 要記得預留安全畫面，若記者直接出現在安全畫面中，必須是已經準備好的狀態；若安全畫面為空景，空景接到記者出現時須為一鏡到底\n12. Mic＆小蜜蜂\n    - 攝影拍到採訪記者拿Mic手的內側，站受訪者左邊用右手，站受訪者右邊用左手\n    - 手不要伸很直\n    - 小蜜蜂的線藏好喔\n    - **「Rode」的Mark要藏好！！！**\n13. 採訪規範\n    - 受訪者不要太側！！！！！也不要看鏡頭，看記者\n    - **不要仰視受訪者！！！！！**\n    - 注意預留Bar的空間\n    - 注意預留頭頂空間\n\n## 影音逐字稿(使用微軟正黑體書寫)\n\n1. 全形＆半形\n\n- 小標空格、記者資訊、Bite 及括號、空格等符號皆使用全形\n- 影片中Bite字幕的括號、空格皆使用半形\n\n2. 受訪者稱謂\n\n- 受訪者標與Bite⿑頭，受訪者頭銜與姓名空一格全形，且需上完整全稱，不得使用簡稱（但文字新聞不需在職稱與姓名間加上空格）Bite_國立中正大學傳播學系教授　姓名\n- 若為非直接相關人士、民眾，可用姓氏就好，最下面的受訪者資訊也是\n\nBite_咖啡店客人／民眾　張先生\n\n- 受訪者若同時為中正大學學生又擁有特殊身分，用特殊身分即可\n- 店家的店名請勿打出來，用XXX業者，如靜心園老闆改成茶飲店業者\n\n3. Bite＆字幕\n\n- Bite字幕含空格需在 15 字以內（兩個英文字母或一個阿拉伯數字＝一個字，兩個半形括號=一個字） \n- 影音字幕：Bite逐字稿裡若含上下引號「」須上在影音字幕（逐字稿跟字幕都是全形）\n- 影音逐字稿：在Bite裡面的時候，因為Bite本身已經有引號，所以如果裡面需要用到引號，要用雙引號『』。\n- 文字稿中若有頓號，影音字幕中不需出現，請用**半形**空格代替頓號\n- 盡量不要出現太多空格，字幕請自行斷句並控制在 15 字以內\n- 字幕如包含法規、專有名詞，需完整在同一句話出現，則不受字幕15 字以內的限制\n- 影音和逐字稿中的⼤標、小標、Bite、受訪者頭銜及名稱務必相同\n- **那、呃、啦、吧、啊、嘛**等語助詞逐字稿跟字幕都不用打出來\n- 影音新聞字幕照美編規定\n- 若Bite裡有記者的提問，請用括號表示，不用將記者提問新增為Bite\n\n4. 受訪者敘述\n\n- XXX說：「．．．。」（「說」只能接冒號，引號後不得另加標點符號）\n- XXX 表示，．．．。（後方為逗號且不加引號，可用認為、指出、強調等替換）\n- 「說」後面引用的常是擲地有聲的短句，且須逐字；「表示」的用法是「摘錄」某人所說的一段話，不須逐字只須寫對方的大意\n- 盡量不用網路流行語，如：PO 請打成「貼」或「發佈」，PUSH 請打成「推」，check請打成「確認」\n- 若受訪者話講一半，可幫忙以（）加上未說出的話，但記得（）在影片字幕中需用半形，且計算在每行不可超過的15字內\n- 受訪者的用語不需加以修正，但上字幕與逐字稿時，應盡量刪除受訪者之贅字，並使用通順易懂的句子，字幕與逐字稿不用完全一樣\n- 若受訪者講英文，逐字稿及字幕請翻成中文（除了專有名詞、翻中看不懂的詞彙，如LINE）\n\n## 其他\n\n1. 拍攝時注意受訪者頭頂空間，預留Bar的空間\n2. 影音新聞跟文字新聞稿皆不需打上xxx記者中正大學報導\n3. 文字新聞用幾月幾日，影音新聞OS用幾月幾號\n4. 有菸跟有酒的（會危害身體健康風險的）要標警語，民間習俗、自殺、危險\n\n# 八、文字新聞內容規範（適用文字、影音、專題、即時新聞逐字稿）\n\n## 文字新聞格式(使用微軟正黑體書寫)\n\n1. 字數：800\\~不設上限（不包含稿頭），專題無字數限制，僅計算內文，標\n\n         題、小標、圖說、註解都不算，並採用Google文件內部計算方法（工具/字\n         數統計/字元數）。\n\n2. 稿頭：字數（包含標點符號）請控制在 100\\~120 字內，內容為新聞⼤致重\n\n         點描述（稿頭為ETV主播使用口白、重點新聞使用）\n\n3. 標題\n\n- 使用粗體\n- ⼤標小標皆20字內（影音大小標15字），含標點符號、英文字⺟、阿拉伯數字及全形空格（兩個英文字母或一個阿拉伯數字＝一個字）\n- 大標小標不得使用逗號、頓號、句號\n\n4. 記者抬頭\n\n- 【記者 人名／縣市地區報導】 \n- 記者與人名中間的空格及斜線均為全形，地名為新聞所在地，如「嘉義民雄報導」、「嘉義市報導」\n- 橫跨嘉義縣市者則為「嘉義報導」，雙縣市者則為「嘉義雲林報導」\n- 若涵蓋多個區域，可使用「綜合報導」\n\n5. 段落＆照片\n\n- 【稿頭】100\\~120 字\n- 【內文】每段開頭不須空格,各段落間需相隔一行\n- 【照片】至少三張照片，並附加圖說，照片頂端需與各段落齊頭\n\n6. 全形＆半形\n\n- 逐字稿標點符號、空格、斜線一律使用全形\n- 逐字稿英文、阿拉伯數字一律使用半形\n\n7. 其他\n\n- 盡量不以圖片當作文字新聞結尾\n- 若文章中大量提及「A和B」，A、B順序應通篇固定\n\n## 文字用法規範（文編活動資訊也適用）\n\n1. 用字以[教育部《重編國語辭典修訂本》](https://dict.revised.moe.edu.tw/search.jsp?md=1)為準\n2. 標點符號以[《重訂標點符號手冊》修訂版](https://language.moe.gov.tw/001/upload/files/site_content/m0001/hau/haushou.htm)為準\n   - 引號（都是用全形）\n     1. 影音逐字稿／字幕\n\n在Bite裡面的時候，因為Bite本身已經有引號，所以如果裡面需要用到引號，要用雙引號『』。\n\n2. 文字新聞：使用全形引號，引號內還需要引號則用雙引號。\n\n3) 數字\n   - 日期\n     1. 使用國字時請全部以國字撰寫，如一百零三年十一月三十日\n     2. 使用西元級數字用法則全以數字撰寫，如2013年11月30日\n   - 時間：以數字撰寫，如中午12點至1點30分\n   - 第幾天：以國字撰寫，如第二天\n   - 第幾項\n     1. 第一項、第二項、第五十六項，統一用國字\n     2. 在引用法條或相關規定的情況下，若對方文件中使用阿拉伯數字，則新聞中也使用阿拉伯數字\n   - 單位\n     1. 十位數以內，以中文字表示；十位數以上，以阿拉伯數字表示。\n        如：兩隻老虎、九篇論文、22 字、100 元、567 處\n     2. 超過三位數則定義為「大數目」，請參考「概數」寫法，如：\n\n13萬、2千元\n\n3. 超過萬位數，則中文數字單位以外部分用阿拉伯數字呈現；若為「十萬/億/兆」、「百萬/億/兆」，則將十、百位部分納入阿拉伯數字如：2千、30萬、500億、7千萬；若為「千萬/億/兆」，則數字部分視為三位數以上之「大數目」需採概數寫法，如：5千萬、2476億\n4. 一般約定成俗者及年份則請使用國字，如兩岸三地、一言九鼎、二十年後\n\n- 概數\n  1. 「數目大」又精確的數字用概數表達，如二十八萬九千七百八十五人(X)，近**29萬人(O)（此處為估算寫法，取最大位數後一位捨五入）**image\n  2. 概算、不確定之數量請使用中文表示，如 共約兩萬三千人、兩百餘個\n  3. 必要使用精確數字時不限，如2476元(可能該數字組合涵蓋特別意義）\n- 年齡\n  1. 需要合在一起念，如三、四十歲，十幾歲到四十幾歲，五十多歲的人，請使用國字\n  2. 單獨使用時用數字，如40歲\n- 小數點、百分比(%)\n  1. 使用半形阿拉伯數字，如50%、0.38\n  2. 百分比寫法，請四捨五入到小數點後第一位。如40.1%。\n  3. 錄os時唸百分之五十，但逐字稿上50%\n- 度數(°C）\n  1. 錄os時唸攝氏(零下)五十度，但逐字稿上(-)50°C\n- 幾到幾\n  1. 二位數內使用國字，如五到十\n  2. 三位數字以上則用數字，如156到892；超過三位數則參考概數寫法，如300億到500億（必要使用精確數字時不限，如2476元）\n\n例：2到3天、500至800毫升\n\n- 分數：統一使用國字，如三分之二\n- 幾成：統一使用國字，如三成五、八成\n\n4. 得、的、地\n   - 美麗「的」花 → 形容詞 \n   - 「得」到禮物 → 動詞 \n   - 穿「得」很漂亮 → 副詞 \n   - 說的好、說得好 → 兩種用法都有，但是二者意思不同，使用情況不同 \n   - 哀傷「地」說 → 副詞 \n   - 爽快的答應、爽快地答應，前者答應是名詞，後者答應是動詞\n   - 用在副詞之後「的」、「地」，兩字通用。\n5. 隻、支\n   - 「隻」用在有生命的情況，如一隻狗\n   - 「支」用在無生命的情況，如一支筆\n6. 他／她、牠、它\n   - 「他／她」用在人身上，如其他人、她是女生，特例：他處 \n   - 「牠」用在動物身上，如牠是隻可愛的小狗\n   - 「它」用在無生命體上\n   - 其他是人部的他\n7. **圖說**\n   - 說明文字後加上句號，不得重複內文或標題，也不要只單純介紹人或物\n   - 說明文字50字內，含標點符號，要讓讀者不用看內文也知道在講什麼\n   - 若為記者本身，或當期記者攝影，請寫【記者　XXX／攝影】 \n   - 若非記者，或為別人提供，請寫【圖片來源　XXX／提供】\n   - 若為記者自己製作，請寫【記者　XXX／製圖】，自行製圖不須給美編看過，含文字新聞的圖和影音新聞的動畫跟cg\n   - 若為實物照片翻拍（實物照片、截圖），請寫【記者　XXX／翻攝自OOO】 \n   - 若是截取網路畫面（資訊類），請寫【記者　XXX／擷取自OOO】\n   - 圖說與【圖片來源】不用分段打\n   - 圖片來源要寫最原始的創作者，不要寫二手的，禁止引用內容農場網站的圖片或內容\n   - 如果是引用他人的圖片，務必事先告知並詢問對方\n     1. 商業機構，如自由時報，應事先詢問，並確實得到對方同意才可取用\n     2. 非商業機構，如粉專，應事先詢問，若完稿前對方尚未回覆，可先行引用（但若事後對方覺得侵權或不妥就會無條件配合下架）\n   - 圖片來源應寫完整，如擷取自XXXXFacebook粉絲專頁\n8. 稱謂 \n   - 第一次出現需寫完整頭銜與姓名，第二次以後可使用簡稱\n   - 學生：首次出現校名不省略或縮寫，如\n\n國立中正大學傳播學系學生／年級XXX\n\n- 職稱：請寫職稱全名，職稱順序為單位名稱-職位-姓名，如\n\n國立中正大學校長XXX\n\n- 不用出現的稱謂：如XXX先生、XXX小姐或老師等，若受訪者不願透露姓名才用X先生／小姐\n\n9. 用詞\n   - 避免冗詞贅字及過於文言的用法，如「做一個...的動作」、「這樣／那樣／怎樣」、「之乎者也」並避免情緒性或主觀的字眼\n   - 避免空泛的形容詞，如十分好、相當好\n   - 避免極端的形容詞，如世界第一、頂級、尊貴無比、最完美\n10. 文字註解\n    - 不包含在字數限制裡面\n    - 盡量不在稿頭下註解，除非後面內文都沒提到\n    -  符號為<>（半形）\n    - <註一>需與內文前一段空一行，註解間不空行，不加空白格，如\n\n<註一>夯：發音為ㄏㄤ，為「很熱門」的流行用詞\n\n- 需先在**文內<>標註**，再於文末寫上詳細的註解，如\n\n內文：\n......防震係數<註一>...... \n註解與內文最後一段空一行\n<註一>防震係數：..... \n<註二>P波：..... \n\n11. 國台語用法：盡量不要有台語翻成中文的字，若為故意製造效果，則須加上\n\n「」讓讀者知道\n\n12. 活動名稱無論在內文中或是標題裡，只要用到活動名稱都請加上「」\n13. 習慣的音譯人名就要習慣的字，如歐巴馬\n14. 通用字如【臺、台】、【了解、瞭解】、【蠻好的、滿好的】通篇統一即可\n15. 如有使用英文單字（如LOGO、WiFi、YouTube、Facebook、Instagram\n\n         、CAS）當作專有名詞使用要全大寫或是首字母大寫，前後不需要空格\n\n16. 受訪者電話號碼統一格式：(電話：09XX-XXX-XXX（手機）/\n\n         05(06)-XXXXXXX（市話）)\n\n# 九、影音＆文字專題內容規範\n\n## 專題線索\n\n1. 專題線索提出時間依排程為準\n2. 找哪位老師討論，由實習媒體委員會助理判斷新聞內容與老師專業的適切性\n\n後，統一安排\n\n## 影音專題\n\n1. 上稿時間：依照排程\n2. 專題影片內一定要有大標小標，位置形式不限。\n3. 專題字幕置中，專題os要上字幕，字幕白底黑邊，受訪者資訊字卡一段Bite\n\n         出現一次，意即不同段Bite需重新出現。\n\n4. 專題字幕、大小標通篇請統一位置與格式，若有特殊需求者請與採主主動溝\n\n         通。\n\n5. 當畫面為空景，背景音爲電訪時，因為沒有固定的Bar所以不用上受訪者資\n\n \t訊，僅在畫面側邊標明聲音來源即可。\n\n6. 專題電訪畫面頭銜不限格式，原則為有電訪畫面，就必須標出「聲音來源」\n7. 影音及專題字幕標點符號、空格、斜線、英文、阿拉伯數字一律使用半形\n8. 逐字稿內容規範，如數字、日期、稱謂、受訪者敘述等，參照上述文字新聞\n\n內容規範。\n\n9. 影音格式規定參照上述影音新聞格式規範。\n\n## 文字專題\n\n1. 文字專題格式參照上述文字新聞規範，若有特殊需求請主動與採主溝通。\n\n\n\n# 十、新聞製作之AI規範\n\n1. 可使用AI搜尋、整理資料、潤飾詞語等。\n2. 不可完全交由AI撰寫新聞。\n3. 若使用AI請註明哪些部分使用AI協助完成。\n4. 國際媒體使用AI之規範參考。image";
+
+const searchEl = document.getElementById("search");
+const clearEl = document.getElementById("clear");
+const resultsEl = document.getElementById("results");
+const countEl = document.getElementById("count");
+
+function escapeHTML(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[c]));
+}
+
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlight(text, query) {
+  const safe = escapeHTML(text);
+  if (!query.trim()) return safe;
+  const terms = query.trim().split(/\s+/).filter(Boolean)
+    .sort((a,b) => b.length - a.length)
+    .map(escapeRegExp);
+  if (!terms.length) return safe;
+  const re = new RegExp("(" + terms.join("|") + ")", "gi");
+  return safe.replace(re, "<mark>$1</mark>");
+}
+
+function inlineMarkdown(text, query) {
+  let s = text.trim();
+
+  // Images
+  s = s.replace(/!\[[^\]]*\]\([^)]+\)/g, "");
+  // Links: keep visible label and make it clickable
+  const links = [];
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) => {
+    const token = `@@LINK${links.length}@@`;
+    links.push({label, url});
+    return token;
+  });
+
+  let out = highlight(s, query);
+  links.forEach((x, i) => {
+    const label = highlight(x.label, query);
+    const safeUrl = escapeHTML(x.url);
+    out = out.replace(`@@LINK${i}@@`,
+      `<a class="link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${label}</a>`);
+  });
+  return out;
+}
+
+function parseMarkdown(raw) {
+  const lines = raw.split(/\r?\n/);
+  const sections = [];
+  let current = null;
+  let pending = [];
+
+  function ensureSection(title) {
+    if (!current) {
+      current = {title: "其他", lines: []};
+      sections.push(current);
+    }
+  }
+
+  for (let rawLine of lines) {
+    const line = rawLine.replace(/\t/g, "    ").trimEnd();
+
+    if (/^# /.test(line)) {
+      current = {title: line.replace(/^# /, "").trim(), lines: []};
+      sections.push(current);
+      continue;
+    }
+    if (/^## /.test(line)) {
+      ensureSection();
+      current.lines.push({type:"subhead", text:line.replace(/^## /,"").trim()});
+      continue;
+    }
+    if (/^### /.test(line)) {
+      ensureSection();
+      current.lines.push({type:"subhead", text:line.replace(/^### /,"").trim()});
+      continue;
+    }
+
+    // Skip empty lines, image-only placeholders, and markdown table separators.
+    if (!line.trim() || /^!\[/.test(line.trim()) || /^\|[- :|]+\|$/.test(line.trim())) continue;
+
+    ensureSection();
+    current.lines.push({type:"line", text:line.trim()});
+  }
+  return sections;
+}
+
+const sections = parseMarkdown(RAW);
+
+function render(query = "") {
+  const q = query.trim().toLowerCase();
+  const terms = q.split(/\s+/).filter(Boolean);
+
+  const matchedSections = sections.map(sec => {
+    const titleMatch = !terms.length || terms.every(t => sec.title.toLowerCase().includes(t));
+    const lines = sec.lines.filter(item => {
+      if (!terms.length) return true;
+      const hay = item.text.toLowerCase();
+      return terms.every(t => hay.includes(t)) || titleMatch;
+    });
+    return {...sec, matchedLines: lines, titleMatch};
+  }).filter(sec => sec.matchedLines.length || sec.titleMatch);
+
+  if (!terms.length) {
+    resultsEl.innerHTML = sections.map(sec => renderSection(sec, "")).join("");
+    countEl.textContent = `共 ${sections.length} 個章節`;
+    return;
+  }
+
+  if (!matchedSections.length) {
+    resultsEl.innerHTML = `<div class="empty">
+      <div style="font-size:18px;margin-bottom:6px;">找不到符合的條文</div>
+      <div>試試看「字幕」「檔名」「受訪者」「圖片」「標題」等關鍵字。</div>
+    </div>`;
+    countEl.textContent = "0 個符合章節";
+    return;
+  }
+
+  resultsEl.innerHTML = matchedSections.map(sec =>
+    renderSection({...sec, lines:sec.matchedLines}, q)
+  ).join("");
+
+  const total = matchedSections.reduce((n,s) => n + s.matchedLines.length, 0);
+  countEl.textContent = `找到 ${total} 筆符合內容，分布於 ${matchedSections.length} 個章節`;
+}
+
+function renderSection(sec, query) {
+  const title = highlight(sec.title, query);
+  let body = sec.lines.map(item => {
+    if (item.type === "subhead") {
+      return `<div class="subhead">${inlineMarkdown(item.text, query)}</div>`;
+    }
+    return `<div class="item"><div class="line">${inlineMarkdown(item.text, query)}</div></div>`;
+  }).join("");
+
+  return `<section class="section">
+    <h2 class="section-title">${title}</h2>
+    <div class="content">${body}</div>
+  </section>`;
+}
+
+searchEl.addEventListener("input", e => render(e.target.value));
+clearEl.addEventListener("click", () => {
+  searchEl.value = "";
+  searchEl.focus();
+  render("");
+});
+
+render("");
+</script>
+</body>
+</html>
